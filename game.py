@@ -34,21 +34,25 @@ def play_turn(active_player, bank): # roll/hold, check to see if there's a winne
     print(f"Current Totals:\n  Player 1: {bank[0]}\n  Player 2: {bank[1]}")
 
     while turn:
-        action = input("Type \"R\" to roll or \"H\" to hold.\n").strip().lower() 
-        if action == "r":
-            turn, turn_total = roll(turn_total)
-            score = bank[active_player] + turn_total
-            print(f"Player {active_player+1} currently has a total of {score}.")
-        elif action == "h":
-            turn = False
-        else:
-            pass #TODO - input validation to loop until valid action above
+        valid_input = False
+        while not valid_input:
+            action = input("Type \"R\" to roll or \"H\" to hold.\n").strip().lower() 
+            if action == "r":
+                valid_input = True
+                turn, turn_total = roll(turn_total)
+                score = bank[active_player] + turn_total
+                print(f"Player {active_player+1} currently has a total of {score}.")
+            elif action == "h":
+                valid_input = True
+                turn = False
+                bank[active_player] = score
+            else:
+                pass 
 
         if score >= GOAL:
             turn = False
             end = True
         else:
-            bank[active_player] = score
             end = False
     print("")
     return active_player, bank, score, end
