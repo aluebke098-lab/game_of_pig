@@ -4,16 +4,23 @@ import random
 # Declare some CONSTANTS
 WIDTH = 400
 HEIGHT = WIDTH*.75
-PLAYER_SIZE = 30
 ENEMY_SIZE = 20
 MOVE_SPEED = 20
 
 # Movement functions
 def move_left(event):
+    global player_size
     canvas.move(player, -MOVE_SPEED, 0) # what to move, change x, change y
+    x0, y0, x1, y1 = canvas.coords(player)
+    if x0 < 0:
+        canvas.coords(player, 0, y0, player_size, y1)
 
 def move_right(event):
+    global player_size
     canvas.move(player, +MOVE_SPEED, 0)
+    x0, y0, x1, y1 = canvas.coords(player)
+    if x1 > WIDTH:
+        canvas.coords(player, WIDTH-player_size, y0, WIDTH, y1)
 
 # Make Enemies
 def spawn_enemy():
@@ -29,7 +36,7 @@ def add_booster():
 
 # run game
 def run_game():
-    global alive, spawn_chance, score
+    global alive, spawn_chance, score, multiplier, player_size
     if spawn_chance > 100:
         spawn_chance -= 1
     
@@ -63,6 +70,13 @@ def run_game():
                     canvas.delete(food)
                     canvas.itemconfigure("mult", text="x" + str(multiplier) + " Multiplier")
                     #////////////////// TODO ///////////////////// make multiplier also adjust player size //////////////////////////////////
+                    player_size += multiplier
+                    x0, y0, x1, y1 = canvas.coords(player)
+                    x0 -= multiplier
+                    y0 -= multiplier
+                    x1 = x0 + player_size
+                    y1 = y0 + player_size
+                    canvas.coords(player, x0, y0, x1, y1)
 
         for enemy in enemies:
             canvas.move(enemy, 0, MOVE_SPEED//2)
@@ -85,7 +99,7 @@ def run_game():
 
 # (re)start game
 def restart(event):
-    global alive, player, enemies, spawn_chance, score, multiplier, boosters
+    global alive, player, enemies, spawn_chance, score, multiplier, boosters, player_size
     
     if not alive:
         # reset all variables to restart game
@@ -93,7 +107,8 @@ def restart(event):
         alive = True
 
         # Make the Player
-        player = canvas.create_rectangle(180, 250, 180+PLAYER_SIZE, 250+PLAYER_SIZE, fill="#238064") # x,y, for top left coord; x1,y1 for bottom right coord
+        player_size = 30
+        player = canvas.create_rectangle(180, 250, 180+player_size, 250+player_size, fill="#238064") # x,y, for top left coord; x1,y1 for bottom right coord
         # Make a list to hold Enemies
         enemies = []
         # enemy spawn change variable so it happens more the longer it goes on
