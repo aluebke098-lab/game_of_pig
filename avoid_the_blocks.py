@@ -1,3 +1,12 @@
+# Avoid the Blocks Extensions Included:
+    # Restart button after you game over (press space to (re)start)
+    # Prevent player from leaving the screen (sets player to the edge on screen if movement would go off screen)
+    # Scoreboard (points for every block that falls off screen)
+    # Collectible objects (multiplier boosters)
+    # Changing player size (because of multipliers)
+    # Making game harder as it goes on (chance to add a block increases over time until it's 100% chance every frame,
+        # also bigger player size make it harder and the booster spawn chance increases over time as well.)
+
 import tkinter as tk
 import random
 
@@ -56,20 +65,21 @@ def run_game():
             canvas.move(food, 0, MOVE_SPEED//2)
         
             if canvas.bbox(food) and canvas.bbox(player): #bounding box - if they exist is a boolean I think?
-                fx1, fy1, fx2, fy2 = canvas.bbox(food) #defining bbox of enemy and player
+                fx1, fy1, fx2, fy2 = canvas.bbox(food) #defining bbox of booster and player
                 px1, py1, px2, py2 = canvas.bbox(player)
 
-                # stops moving enemies once they fall off of the screen, and adds to the score for every one that you can dodge
+                # stops moving boosters once they fall off of the screen
                 if fy1 > HEIGHT:
                     boosters.remove(food)
                     canvas.delete(food)
-
-                if fx1 < px2 and fx2 > px1 and fy1 < py2 and fy2 > py1: #actual collision check
+                
+                if fx1 < px2 and fx2 > px1 and fy1 < py2 and fy2 > py1: #actual collision check, adds to multiplier when you collect it
                     multiplier += 1
                     boosters.remove(food)
                     canvas.delete(food)
                     canvas.itemconfigure("mult", text="x" + str(multiplier) + " Multiplier")
-                    #////////////////// TODO ///////////////////// make multiplier also adjust player size //////////////////////////////////
+                    
+                    # adjusting player size
                     player_size += multiplier
                     x0, y0, x1, y1 = canvas.coords(player)
                     x0 -= multiplier
@@ -85,7 +95,7 @@ def run_game():
                 ex1, ey1, ex2, ey2 = canvas.bbox(enemy) #defining bbox of enemy and player
                 px1, py1, px2, py2 = canvas.bbox(player)
 
-                # stops moving enemies once they fall off of the screen, and adds to the score for every one that you can dodge
+                # stops moving enemies once they fall off of the screen, and adds to the score
                 if ey1 > HEIGHT:
                     enemies.remove(enemy)
                     canvas.delete(enemy)
